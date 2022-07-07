@@ -9,7 +9,7 @@ git_update(){
 }
 
 getPageElement(){
-	downloadedpage=$(curl $(if [ $cookies != "" ]; then echo -b "\"$cookies\" "; fi)-L $1 2> /dev/null) || { echo "Invalid url $1" ; exit 1; }
+	downloadedpage=$(curl $(if [[ $cookies != "" ]]; then echo -b "\"$cookies\" "; fi)-L $1 2> /dev/null) || { echo "Invalid url $1" ; exit 1; }
 	element=$(xmllint --html --xpath $2 <(echo $downloadedpage) 2> /dev/null) || { echo 'Parse error'; exit 1; } 
 }
 
