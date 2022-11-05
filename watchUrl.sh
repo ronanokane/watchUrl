@@ -9,7 +9,7 @@ git_update(){
 }
 
 getPageElement(){
-	downloadedpage=$(curl $(if [[ $cookies != "" ]]; then echo -b "\"$cookies\" "; fi)-L $1 2> /dev/null) || { echo "Invalid url $1" ; exit 1; }
+	downloadedpage=$(node retrieveHtml.js "$1" "$cookies" 2> /dev/null) || { echo "Couldn' t connect to $1" ; exit 1; }
 	element=$(xmllint --html --xpath $2 <(echo $downloadedpage) 2> /dev/null) || { echo 'Parse error'; exit 1; } 
 }
 
@@ -31,9 +31,9 @@ if [ $# -eq 2 ]; then
 	xpath=$2
 elif [ $# -eq 0 ]; then
 	if [ -e "config.json" ]; then
-		url=$(cat config.json | jq '.url' | tr -d '"')
-		xpath=$(cat config.json | jq '.xpath' | tr -d '"')
-		cookies=$(cat config.json | jq '.cookies' | tr -d '"')
+		url=$(cat config.json | jq '.url' | xargs)
+		xpath=$(cat config.json | jq '.xpath' | xargs)
+		cookies=$(cat config.json | jq '.cookies' | xargs)
 	else
 		usage $0
 	fi
