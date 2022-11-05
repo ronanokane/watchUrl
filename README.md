@@ -9,7 +9,7 @@ git clone https://github.com/ronanokane/watchurl.git<br>
 
 mkdir ~/urlToWatch<br>
 cd watchUrl<br>
-cp watchUrl.sh retrieveHtml.js ~/urlTowatch/<br>
+cp watchUrl.sh retrieveHtml.js ~/urlToWatch/<br>
 cd ~/urlToWatch<br>
 npm i puppeteer-core<br>
 
