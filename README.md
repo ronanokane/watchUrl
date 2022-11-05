@@ -4,6 +4,8 @@ A bash script to watch part of a html page of given url (by xpath) every x numbe
 
 ## Setup:
 
+Requires chromium, nodejs, xmllint and puppeteer-core<br>
+
 Create a new directory and copy files into it eg:<br>
 git clone https://github.com/ronanokane/watchurl.git<br>
 
