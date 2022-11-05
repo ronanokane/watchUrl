@@ -24,5 +24,6 @@ Alternatively with cookies:
 
 ./watchUrl.sh \<https://www.whatever.com> \<xpath\> < cookieFile
 
-After first run you can just use ./watchUrl.sh without args. config.json has stored the arguments for future use. Just delete or modify this file for using different urls and delete .git
-<br>Use git command to analyse the changes.
+After first run you can just use ./watchUrl.sh without args. config.json has stored the arguments for future use.<br>Use git command to analyse the changes.
+
+When using a different URL just start afresh in new folder with the two scripts or just delete config.json, the .html and .git in the current folder.
