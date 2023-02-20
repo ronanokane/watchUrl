@@ -1,0 +1,22 @@
+{
+  "name": "watchurl",
+  "version": "1.0.0",
+  "description": "Monitor specific parts (using xPath) of a remote URL html page for changes and save results.",
+  "main": "retrieveHtml.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronanokane/watchUrl.git"
+  },
+  "author": "Ronan O' Kane",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ronanokane/watchUrl/issues"
+  },
+  "homepage": "https://github.com/ronanokane/watchUrl#readme",
+  "dependencies": {
+    "puppeteer-core": "^19.7.1"
+  }
+}

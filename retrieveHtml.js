@@ -12,8 +12,7 @@ const puppeteer = require("puppeteer-core");
     });
     const page = await browser.newPage(), domainname="." + (new URL(process.argv[2])).hostname;
 
-    if(process.argv[3]!==undefined && process.argv[3]!=="")
-    {
+    if(process.argv[3]!==undefined && process.argv[3]!==""){
         var cookies=process.argv[3].split('; ').map((item)=>{
             var items=item.split('='); 
             return {domain: domainname, name: items[0], value: items[1]}
