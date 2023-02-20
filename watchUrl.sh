@@ -51,7 +51,7 @@ fi
 while :
 do
 	sleep 10
-	getPageElement "$url" "$xpath" || continue
+	getPageElement "$url" "$xpath" 2> /dev/null || continue
 
 	if [ $(md5sum "pageExtract" | awk '{print $1}') != $(echo "$extract" | md5sum | awk '{print $1}') ]; then
 		echo "$extract" > "pageExtract"
