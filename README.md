@@ -6,26 +6,16 @@ A bash script to watch part of a html page of given url (by xpath) every x numbe
 
 Requires chromium, nodejs, xmllint and puppeteer-core<br>
 
-Create a new directory and copy files into it eg:<br>
-git clone https://github.com/ronanokane/watchurl.git<br>
-
-mkdir ~/urlToWatch<br>
-cd watchUrl<br>
-cp watchUrl.sh retrieveHtml.js ~/urlToWatch/<br>
-cd ~/urlToWatch<br>
-npm i puppeteer-core<br>
+Copy watchUrl.sh and retrieveHtml.js into separate dir for each Url to be watched.
 
 ## Usage:
 
-Make different urlToWatch folder for each new url!
-<br>Initially to start watching url element:
+<br>To start watching url:
 
-./watchUrl.sh \<https://www.whatever.com> \<xpath\>
+./watchUrl.sh -u \<https://www.whatever.com> -x \<xpath\>
 
 Alternatively with cookies:
 
-./watchUrl.sh \<https://www.whatever.com> \<xpath\> < cookieFile
+./watchUrl.sh -u \<https://www.whatever.com> -x \<xpath\> -c cookies
 
 After first run you can just use ./watchUrl.sh without args. config.json has stored the arguments for future use.<br>Use git command to analyse the changes.
-
-When using a different URL just start afresh in new folder with the two scripts or just delete config.json, the .html and .git in the current folder.
