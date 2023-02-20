@@ -9,8 +9,8 @@ git_update(){
 }
 
 getPageElement(){
-	downloadedpage=$(node retrieveHtml.js "$1" "$cookies" 2> /dev/null) || return 1
-	xmllint --html --xpath $2 <(echo $downloadedpage) 2> /dev/null || { echo parsing error... >&2; exit 1; }
+	downloadedpage=$(node retrieveHtml.js "$1" "$cookies" 2> /dev/null) || { echo "Connection failure $1" >&2; return -1; }
+	extract=$(xmllint --html --xpath $2 <(echo $downloadedpage) 2> /dev/null) || { echo "Parse error..." >&2; exit 1; }
 }
 
 usage(){
@@ -40,7 +40,7 @@ if [ $# -eq 0 ]; then
 		usage $0
 	fi
 elif [ ! -z $xpath ] && [ ! -z $url ]; then
-	extract=$(getPageElement "$url" "$xpath") || { echo Connection problem...; exit 1; }
+	getPageElement "$url" "$xpath" || exit 1
 	echo "$extract" > "pageExtract"
 	jq -n "{url: \"$url\", xpath: \"$xpath\", cookies: \"$cookies\"}" > config.json
 	git init &> /dev/null && git_update "initial commit... $xpath"
@@ -51,7 +51,7 @@ fi
 while :
 do
 	sleep 10
-	extract=$(getPageElement "$url" "$xpath") || continue
+	getPageElement "$url" "$xpath" || continue
 
 	if [ $(md5sum "pageExtract" | awk '{print $1}') != $(echo "$extract" | md5sum | awk '{print $1}') ]; then
 		echo "$extract" > "pageExtract"
