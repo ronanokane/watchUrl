@@ -4,7 +4,7 @@ A bash script to watch part of a html page of given url (by xpath) every x numbe
 
 ## Setup:
 
-Requires chromium, nodejs, xmllint and puppeteer-core<br>
+Requires chromium, nodejs, xmllint, notify-send and puppeteer-core<br>
 
 Copy watchUrl.sh and retrieveHtml.js into separate dir for each Url to be watched.
 
