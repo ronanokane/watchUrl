@@ -1,35 +1,37 @@
 #!/bin/bash
 
-# Watch remote html element for changes and record
-# Place this .sh in its own dir for each URL
+# Watch remote html page for changes and record
+# Cd into separate dir for each new Url
 
 git_update(){
-	git add 'pagePart.html' > /dev/null
-	git commit -m $1 > /dev/null
+	git add "pageExtract" &> /dev/null
+	git commit -m "$1" &> /dev/null
 }
 
 getPageElement(){
-	downloadedpage=$(node retrieveHtml.js "$1" "$cookies" 2> /dev/null) || { echo "Couldn' t connect to $1" ; exit 1; }
-	element=$(xmllint --html --xpath $2 <(echo $downloadedpage) 2> /dev/null) || { echo 'Parse error'; exit 1; } 
+	downloadedpage=$(node retrieveHtml.js "$1" "$cookies" 2> /dev/null) || return 1
+	xmllint --html --xpath $2 <(echo $downloadedpage) 2> /dev/null || { echo parsing error... >&2; exit 1; }
 }
 
 usage(){
-	echo "Usage: $1 <url> <xPath_element>"
-	echo "Usage: $1 <url> <xPath> < cookiefile"
-	echo "Usage: $1"
-	echo
-	echo "Note: Initial use requires 2 args"
-	echo "subsequent use after requires no args as state is already saved"
-	echo
+	echo "Usage: $1 -u <url> -x <xPath_element> -c <cookies>" >&2
+	echo "Note: Initial use requires at least -u and -x options" >&2
+	echo "subsequent use after requires no args as state is already saved" >&2
 	exit 1
 }
 
-read -t 1 cookies
+while getopts ':u:x:c:' OPTION; do
+	case "$OPTION" in
+		u)
+			url="$OPTARG";;
+		x)
+			xpath="$OPTARG";;
+		c)
+			cookies="$OPTARG";;
+	esac
+done
 
-if [ $# -eq 2 ]; then
-	url=$1
-	xpath=$2
-elif [ $# -eq 0 ]; then
+if [ $# -eq 0 ]; then
 	if [ -e "config.json" ]; then
 		url=$(cat config.json | jq '.url' | xargs)
 		xpath=$(cat config.json | jq '.xpath' | xargs)
@@ -37,26 +39,24 @@ elif [ $# -eq 0 ]; then
 	else
 		usage $0
 	fi
+elif [ ! -z $xpath ] && [ ! -z $url ]; then
+	extract=$(getPageElement "$url" "$xpath") || { echo Connection problem...; exit 1; }
+	echo "$extract" > "pageExtract"
+	jq -n "{url: \"$url\", xpath: \"$xpath\", cookies: \"$cookies\"}" > config.json
+	git init &> /dev/null && git_update "initial commit... $xpath"
 else
 	usage $0
-fi
-
-if [ ! -e "pagePart.html" ]; then
-	getPageElement $url $xpath
-	echo $element > pagePart.html
-	git init 2> /dev/null
-	git_update 'initial_commit'
-	jq -n "{url: \"$1\", xpath: \"$2\", cookies: \"$cookies\"}" > config.json
 fi
 
 while :
 do
 	sleep 10
-	getPageElement $url $xpath
+	extract=$(getPageElement "$url" "$xpath") || continue
 
-	if [ $(md5sum pagePart.html | awk '{print $1}') != $(echo $element | md5sum | awk '{print $1}') ]; then
-		echo $element > pagePart.html
-		git_update 'element_change'
-		echo 'recorded a change...'
-	fi  
+	if [ $(md5sum "pageExtract" | awk '{print $1}') != $(echo "$extract" | md5sum | awk '{print $1}') ]; then
+		echo "$extract" > "pageExtract"
+		git_update 'change...'
+		git show --pretty=format:'%b'
+		notify-send --icon=git "change..." "$url" 
+	fi
 done
