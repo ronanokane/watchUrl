@@ -1,32 +1,31 @@
-// node.js retrieveHtml.js <https://www.whatever.com>
-// node.js retrieveHtml.js <https://www.whatever.com> '<cookies>'
+// node.js retrieveHtml.js '<https://www.whatever.com>'
+// node.js retrieveHtml.js '<https://www.whatever.com>' '<cookies>'
 
 const puppeteer = require("puppeteer-core");
 
 (async ()=>{
-    if(process.argv[2]===undefined || !/^https?:\/\//.test(process.argv[2]) )process.exit(1);
+    if(process.argv[2]===undefined || !/^https?:\/\//.test(process.argv[2]) )process.exit(1)
 
     const browser = await puppeteer.launch({
        product: "chrome", executablePath: "/usr/bin/chromium",
        headless: true
-    });
-    const page = await browser.newPage(), domainname="." + (new URL(process.argv[2])).hostname;
+    })
+    const page = await browser.newPage(), domainname=(new URL(process.argv[2])).hostname
 
     if(process.argv[3]!==undefined && process.argv[3]!==""){
-        var cookies=process.argv[3].split('; ').map((item)=>{
-            var items=item.split('='); 
-            return {domain: domainname, name: items[0], value: items[1]}
+        var cookies=process.argv[3].split('; ').flatMap((item)=>{
+            const equalsSign=item.indexOf('=')
+            return equalsSign==-1 ? [] : {domain: domainname, name: item.slice(0,equalsSign), value: item.slice(equalsSign+1)}
         });
-        await page.setCookie(...cookies);
     }
 
     try{
-        await page.goto(process.argv[2],{waitUntil: 'domcontentloaded'});
+        await page.goto(process.argv[2],{waitUntil: 'domcontentloaded'})
+        console.log(await page.content())
     }catch(err){
-        browser.close();        
-        process.exit(1);
-    }
-    
-    console.log(await page.content());
-    browser.close();
-})();
+        browser.close()     
+        process.exit(1)
+    } 
+    console.log(await page.content())
+    browser.close()
+})()
